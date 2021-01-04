@@ -2,18 +2,89 @@
     <div class="form-block">
       <div class="form-block__left">
       </div>
-      <form class="form-block__right">
+      <form class="form-block__right" @input="unlockButton()" @submit.prevent="fetchLogin()">
         <h2>Connexion</h2>
         <label for="email" class="label label__email">Email : </label><br>
-        <input type="text" id="email" class="input input__mail" name="email" placeholder="ex: jean.dupond@groupomania.fr" /><br>
-        <p class="error" id="email-error"></p>
+        <input type="text" id="email" class="input input__mail" name="email" placeholder="ex: jean.dupond@groupomania.fr" @input="verifEmail()"/><br>
         <label for="password" class="label label__password">Mot de passe : </label><br>
-        <input type="password" id="password" class="input input__password" name="password" placeholder="**********" /><br>
-        <p class="error" id="email-error"></p>
-        <input type="submit" value="Connexion" id="submit" class="button" />
+        <input type="password" id="password" class="input input__password" name="password" placeholder="**********" @input="verifMdp()"/><br>
+        <p class="error" id="error"></p>
+        <input type="submit" value="Connexion" id="submit" class="button" disabled/>
       </form>
     </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'HelloWorld',
+  methods: {
+      formVerif(regex, message, input, error) {
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      verifEmail() {
+          const regex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
+          const message = 'Merci d\'entrer un email valide';
+          const input = document.getElementById('email');
+          const error = document.getElementById('error');
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      verifMdp() {
+          const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+          const message = 'Merci d\'entrer un mot de passe valide';
+          const input = document.getElementById('password');
+          const error = document.getElementById('error');
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      unlockButton() {
+          const greenBorder = document.getElementsByClassName('green-border');
+          const button = document.getElementById('submit');
+          if(greenBorder.length === 2)
+          {
+              button.removeAttribute('disabled');
+          }
+          else
+          {      
+              button.setAttribute('disabled', 'true');
+          }
+      },
+      fetchLogin() {
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          axios.post('http://localhost:3000/api/auth/login', 
+          { email: email, password: password });
+      }
+  }
+}
+</script>
 
 
 <style scoped lang="scss">
@@ -37,7 +108,7 @@ h2
   display: flex;
   border-radius: 20px;
   box-shadow: 0px 7px 15px 0px #000000;
-  width: 50%;
+  width: 900px;
 
   &__left
   {
@@ -81,6 +152,11 @@ h2
   font-weight: 600;
 }
 
+.green-border
+{
+    border: 2px solid green;
+}
+
 .button
 {
     width: 25%;
@@ -97,6 +173,18 @@ h2
       background-color: #fff;
       color: #fd2e01;
       border: 2px solid #fd2e01;
+    }
+
+    &:disabled
+    {
+        background-color: lighten($color: #fd2e01, $amount: 20%);
+        &:hover, &:focus
+        {
+            background-color: lighten($color: #fd2e01, $amount: 20%);
+            color: #fff;
+            border: 2px solid lighten($color: #fd2e01, $amount: 20%);
+            cursor: not-allowed;
+        }
     }
 }
 

@@ -7,10 +7,7 @@ const regex = /^[A-Za-z0-9-,.?:;!çéèà()&\s]+$/;
 exports.createArticle = (req, res, next) =>
 {
   const content = req.body.content;
-    connection.query('INSERT INTO articles (userId, content) VALUES (req.body.userId, req.body.content)' , function(error, result, fields)
-    {
-      console.log(result);
-    })
+  console.log(content);
 };
 
 exports.modifyArticle = (req, res, next) =>
