@@ -2,55 +2,136 @@
     <div class="form-block">
       <div class="form-block__top">
       </div>
-        <form class="form-block__bottom">
+        <form class="form-block__bottom" @input="unlockButton()" @submit.prevent="fetchSignup()">
             <h2>Inscription</h2>
             <div class="row">
                 <label for="nom" class="label">Nom</label>
-                <input type="text" id="name" class="input input__nom" placeholder="ex: Dupond" @input.prevent="verif()"/>
+                <input type="text" id="name" class="input input__nom" placeholder="ex: Dupond" @input="verifNom()"/>
             </div>
             <div class="row">
                 <label for="prenom" class="label">Prénom</label>
-                <input type="text" id="prenom" class="input input__prenom" placeholder="ex: Jean"/>
+                <input type="text" id="prenom" class="input input__prenom" placeholder="ex: Jean" @input="verifPrenom()"/>
             </div>
             <div class="row">
                 <label for="email" class="label label__email">Email</label>
-                <input type="text" id="email" class="input input__mail" name="email" placeholder="ex: jean.dupond@groupomania.fr" />
+                <input type="text" id="email" class="input input__mail" name="email" placeholder="ex: jean.dupond@groupomania.fr" @input="verifEmail()"/>
             </div>
             <p class="text">Veuillez renseigner votre adresse email interne à Groupomania uniquement.</p>
             <div class="row">
                 <label for="password" class="label label__password">Mot de passe</label>
-                <input type="password" id="password" class="input input__password" name="password" placeholder="**********" />
+                <input type="password" id="password" class="input input__password" name="password" placeholder="**********" @input="verifMdp()"/>
             </div>
             <p class="text">Veuillez choisir un mot de passe entre 8 et 12 caractères comprenant au moins une 
             lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial (!-*+@#_/:?$€).</p>
             <p class="error" id="error"></p>
             <div class="row">
-                <input type="submit" value="Inscription" id="submit" class="button" />
-            </div>
-        
+                <input type="submit" value="Inscription" id="submit" class="button" disabled/>
+            </div>        
       </form>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'HelloWorld',
   methods: {
-      verif() {
-          const regexNom = /^[A-Za-z-]*$/;
-          const messageNom = 'Merci d\'entrer un nom et un prénom valide !';
-          const inputNom = document.getElementById('name');
-          const error = document.getElementById('error');
-          if(regexNom.test(inputNom.value))
+      formVerif(regex, message, input, error) {
+          if(regex.test(input.value))
           {
               error.textContent = '';
-              inputNom.classList.add('green-border');
+              input.classList.add('green-border');
           }
           else
           {
-              inputNom.classList.remove('green-border');
-              error.textContent = messageNom;
+              input.classList.remove('green-border');
+              error.textContent = message;
           }
+      },
+      verifNom() {
+          const regex = /^[A-Za-z-]*$/;
+          const message = 'Merci d\'entrer un nom valide !';
+          const input = document.getElementById('name');
+          const error = document.getElementById('error');
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      verifPrenom() {
+          const regex = /^[A-Za-z-]*$/;
+          const message = 'Merci d\'entrer un prénom valide !';
+          const input = document.getElementById('prenom');
+          const error = document.getElementById('error');
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      verifEmail() {
+          const regex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
+          const message = 'Merci d\'entrer un email valide (voir notice ci-dessus)';
+          const input = document.getElementById('email');
+          const error = document.getElementById('error');
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      verifMdp() {
+          const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+          const message = 'Merci d\'entrer un mot de passe valide (voir notice ci-dessus)';
+          const input = document.getElementById('password');
+          const error = document.getElementById('error');
+          if(regex.test(input.value))
+          {
+              error.textContent = '';
+              input.classList.add('green-border');
+          }
+          else
+          {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }
+      },
+      unlockButton() {
+          const greenBorder = document.getElementsByClassName('green-border');
+          const button = document.getElementById('submit');
+          if(greenBorder.length === 4)
+          {
+              button.removeAttribute('disabled');
+          }
+          else
+          {      
+              button.setAttribute('disabled', 'true');
+          }
+      },
+      fetchSignup() {
+          const nom = document.getElementById('name').value;
+          const prenom = document.getElementById('prenom').value;
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          axios.post('http://localhost:3000/api/auth/signup', 
+          { nom: nom, prenom: prenom, email: email, password: password });
       }
   }
 }
@@ -167,6 +248,18 @@ h2
       background-color: #fff;
       color: #fd2e01;
       border: 2px solid #fd2e01;
+    }
+
+    &:disabled
+    {
+        background-color: lighten($color: #fd2e01, $amount: 20%);
+        &:hover, &:focus
+        {
+            background-color: lighten($color: #fd2e01, $amount: 20%);
+            color: #fff;
+            border: 2px solid lighten($color: #fd2e01, $amount: 20%);
+            cursor: not-allowed;
+        }
     }
 }
 

@@ -1,13 +1,15 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const mysql = require('mysql');
 
-mdpRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-emailRegex = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+nomPrenomRegex = /^[A-Za-z-]*$/;
+mdpRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+emailRegex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
 
 exports.signup = (req, res, next) =>
 {
-    if(mdpRegex.test(req.body.password) && emailRegex.test(req.body.email))
+    if(mdpRegex.test(req.body.password) && emailRegex.test(req.body.email) && nomPrenomRegex.test(req.body.nom) && nomPrenomRegex.test(req.body.prenom))
     {
         const email = req.body.email;
         const emailBuffer = Buffer.from(email);
@@ -36,10 +38,8 @@ exports.login = (req, res, next) =>
         const email = req.body.email;
         const emailBuffer = Buffer.from(email);
         const emailMasked = emailBuffer.toString('base64');
-        connection.query('SELECT id, email, password FROM users WHERE email LIKE %' + emailMasked + '%', function(error, result, fields)
-        {
-            
-        });
+        console.log(emailMasked);
+        console.log(req.body.password);
     }
     else
     {
