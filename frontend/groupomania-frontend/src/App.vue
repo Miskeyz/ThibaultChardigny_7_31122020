@@ -3,12 +3,36 @@
     <div class="nav-container">
       <div id="nav">
         <router-link to="/"><img src="./images/logo_blanc.png" alt="" /></router-link>
-        <router-link to="/inscription" class="lien__inscription">Inscription</router-link>
+        <router-link to="/inscription" class="lien__inscription" v-if="isConnected()">Inscription</router-link>
+        <a href="#" class="lien_inscription" @click="disconnect()" v-else>Déconnexion</a>
       </div>
     </div>
     <router-view/>
   </div>
 </template>
+
+<script>
+import { mapActions } from 'vuex'
+
+export default {
+  name: 'App',
+  methods: {
+    ...mapActions(['disconnect']),
+    isConnected() {
+      const token = sessionStorage.getItem('token');
+      const userId = sessionStorage.getItem('userId');
+      if(token && userId)
+      {
+        return false
+      }
+      else
+      {
+        return true
+      }
+    },
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
