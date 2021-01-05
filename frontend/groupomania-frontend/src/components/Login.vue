@@ -80,8 +80,13 @@ export default {
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
           axios.post('http://localhost:3000/api/auth/login', 
-          { email: email, password: password });
-      }
+          { email: email, password: password })
+          .then ((response) => {
+              sessionStorage.setItem('token', response.data.token);
+              sessionStorage.setItem('userId', response.data.userId);
+              window.location.reload();
+          });
+      },
   }
 }
 </script>

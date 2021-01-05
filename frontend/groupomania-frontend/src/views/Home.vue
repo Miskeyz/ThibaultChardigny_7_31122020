@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <HelloWorld v-show="false" />
-    <Articles v-show="true"/>
+    <HelloWorld v-if="isConnected()" />
+    <Articles v-else/>
   </div>
 </template>
 
@@ -14,6 +14,20 @@ export default {
   components: {
     HelloWorld,
     Articles
+  },
+  methods: {
+    isConnected() {
+      const token = sessionStorage.getItem('token');
+      const userId = sessionStorage.getItem('userId');
+      if(token && userId)
+      {
+        return false
+      }
+      else
+      {
+        return true
+      }
+    },
   }
 }
 </script>

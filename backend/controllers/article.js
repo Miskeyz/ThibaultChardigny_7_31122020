@@ -27,7 +27,18 @@ exports.getOneArticle = (req, res, next) =>
 
 exports.getAllArticles = (req, res, next) =>
 {
-
+  const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    port: '8889',
+    database: 'Groupomania'
+  });
+  let ret = [];
+  const get = connection.query('SELECT * FROM `articles`', function (error, results) {
+    res.json(results);
+    console.log(results);
+  });
 };
 
 exports.postLike = (req, res, next) =>

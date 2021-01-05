@@ -10,12 +10,20 @@
                 <p>Né le 04/09/1991</p>
             </div>
             <div class="articles">
-                <form @input="unlockButton" @submit="fetchArticle">
+                <form @input="unlockButton" @submit="fetchCreateArticle">
                     <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea"></textarea><br>
                     <input type="submit" id="publier" class="button" value="Publier" disabled />
                 </form>
                 <div class="last-articles">
-                    <h2 class="last-articles__heading">Thibault Chardigny</h2>
+                    <div class="last-articles__row">
+                        <div>
+                            <h2 class="last-articles__heading">Thibault Chardigny</h2>
+                        </div>
+                        <div>
+                            <button class="last-articles__button" id="modify">Modifier</button>
+                            <button class="last-articles__button" id="delete">Supprimer</button>
+                        </div>
+                    </div>
                     <p class="last-articles__content">
                         Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
                         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
@@ -74,10 +82,14 @@ export default {
               likeButton.classList.add('last-articles__like--liked');
           }
       },
-      fetchArticle() {
+      fetchCreateArticle() {
           const content = document.getElementById('textarea').value;
           axios.post('http://localhost:3000/api/article', 
           { content: content });
+      },
+      fetchGetAllArticles() {
+          axios.get('http://localhost:3000/api/article')
+          .then(response => response.data);
       }
   }
 }
@@ -133,6 +145,7 @@ form
     &__heading
     {
         font-size: 1em;
+        margin-bottom: 0;
     }
 
     &__content
@@ -149,6 +162,30 @@ form
         background-color: #fff;
         font-weight: 600;
         &--liked
+        {
+            background-color: #fd2e01;
+            color: #fff;
+        }
+    }
+
+    &__row
+    {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__button
+    {
+        margin-right: 10px;
+        border-radius: 30px;
+        padding: 5px 15px;
+        border-color: #fd2e01;
+        color: #fd2e01;
+        background-color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover, &:focus
         {
             background-color: #fd2e01;
             color: #fff;

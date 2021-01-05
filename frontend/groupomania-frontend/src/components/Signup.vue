@@ -36,19 +36,15 @@ import axios from 'axios';
 
 export default {
   name: 'HelloWorld',
+  data: function() {
+      return {
+        regexNom: /^[A-Za-z-]*$/,
+        messageNom: 'Merci d\'entrer un nom valide !',
+        inputNom: document.getElementById('name'),
+        error: document.getElementById('error'),
+      }
+  },
   methods: {
-      formVerif(regex, message, input, error) {
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
-      },
       verifNom() {
           const regex = /^[A-Za-z-]*$/;
           const message = 'Merci d\'entrer un nom valide !';
@@ -132,6 +128,7 @@ export default {
           const password = document.getElementById('password').value;
           axios.post('http://localhost:3000/api/auth/signup', 
           { nom: nom, prenom: prenom, email: email, password: password });
+          window.location = 'http://localhost:8080';
       }
   }
 }
