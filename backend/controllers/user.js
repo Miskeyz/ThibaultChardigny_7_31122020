@@ -22,8 +22,8 @@ exports.signup = (req, res, next) =>
         const email = req.body.email;
         const emailBuffer = Buffer.from(email);
         const emailMasked = emailBuffer.toString('base64');
-
         let emailAlreadyUsed;
+
         const searchEmailData = `SELECT email FROM users WHERE email = "${emailMasked}"`;
         connection.query(searchEmailData, function(error, results) {
             emailAlreadyUsed = results.length;                                                   
@@ -36,7 +36,6 @@ exports.signup = (req, res, next) =>
                         const data = `INSERT INTO users (nom, prenom, email, password) VALUES ("${req.body.nom}","${req.body.prenom}","${emailMasked}","${hash}")`;
                         connection.query(data, function(err, res) {
                         console.log('Utilisateur enregistré !');
-                        connection.end();
                     })}
                     else {
                         return 'Email déjà utilisé !';

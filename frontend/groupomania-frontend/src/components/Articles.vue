@@ -14,40 +14,37 @@
                     <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea"></textarea><br>
                     <input type="submit" id="publier" class="button" value="Publier" disabled />
                 </form>
-                <div class="last-articles" v-if="isClicked">
-                    <div class="last-articles__row">
+                <div v-for="item in articleList" v-bind:key="item.id">
+                    <div class="last-articles" v-if="isClicked">
+                        <div class="last-articles__row">
+                            <div>
+                                <h2 class="last-articles__heading">{{ item.prenom }} {{ item.nom }}</h2>
+                            </div>
+                            <div>
+                                <button class="last-articles__button" id="modify" v-show="isConnected(item.userId)" @click="modify()">Modifier</button>
+                                <button class="last-articles__button" id="delete" v-show="isConnected(item.userId)" @click="fetchDeleteArticle(item.id)">Supprimer</button>
+                            </div>
+                        </div>
+                        <p class="last-articles__content">
+                            {{ item.content }}
+                        </p>
+                        <button @click="liked" class="last-articles__like" id="like">J'aime</button>
+                    </div>
+                    <div class="last-articles" v-else>
                         <div>
                             <h2 class="last-articles__heading">Thibault Chardigny</h2>
                         </div>
-                        <div>
-                            <button class="last-articles__button" id="modify" @click="modify">Modifier</button>
-                            <button class="last-articles__button" id="delete" @click="fetchDeleteArticle">Supprimer</button>
-                        </div>
+                        <form @submit.prevent="fetchModifyArticle">
+                        <textarea id="modify-textarea">
+                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
+                            a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, 
+                            but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 
+                            1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
+                            publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                        </textarea>
+                        <input @click="confirm" class="last-articles__button" id="submitModify" value="Valider" /></form>
                     </div>
-                    <p class="last-articles__content">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
-                        a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, 
-                        but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 
-                        1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
-                        publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </p>
-                    <button @click="liked" class="last-articles__like" id="like">J'aime</button>
-                </div>
-                <div class="last-articles" v-else>
-                    <div>
-                        <h2 class="last-articles__heading">Thibault Chardigny</h2>
-                    </div>
-                    <form @submit.prevent="fetchModifyArticle">
-                    <textarea id="modify-textarea">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
-                        a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, 
-                        but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 
-                        1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
-                        publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </textarea>
-                    <input @click="confirm" class="last-articles__button" id="submitModify" value="Valider" /></form>
                 </div>
             </div>
         </div>
@@ -61,7 +58,8 @@ export default {
   name: 'Articles',
   data: function() {
       return{
-          isClicked: true
+          isClicked: true,
+          articleList: []
       }
   },
   created () {
@@ -69,7 +67,7 @@ export default {
   },
   methods: {
       verifTextarea() {
-          const regex = /^[A-Za-z-,;!@#€$ùèçéà&“_/§?\s()]+$/;
+          const regex = /^[A-Za-z0-9-,.;!@#€$ùèçéà&“'_/§?\s()]+$/;
           const input = document.getElementById('textarea');
           if(regex.test(input.value))
           {
@@ -83,7 +81,6 @@ export default {
       unlockButton() {
           const greenBorder = document.getElementsByClassName('green-border-articles');
           const button = document.getElementById('publier');
-          console.log(greenBorder.length)
           if(greenBorder.length === 1)
           {
               button.removeAttribute('disabled');
@@ -110,32 +107,46 @@ export default {
           const userId = sessionStorage.getItem('userId');
           axios.post('http://localhost:3000/api/article', 
           { content: content, userId: userId });
+          window.location.reload();
       },
-      fetchModifyArticle() {
+      fetchModifyArticle(id) {
           const content = document.getElementById('textarea').value;
           const userId = sessionStorage.getItem('userId');
-          axios.put('http://localhost:3000/api/article/:id', 
-          { content: content, userId: userId });
+          axios.put('http://localhost:3000/api/article/:' + id, 
+          { content: content, userId: userId, id: id });
       },
-      fetchDeleteArticle() {
+      fetchDeleteArticle(id) {
           const userId = sessionStorage.getItem('userId');
-          axios.delete('http://localhost:3000/api/article/:id', 
-          { userId: userId });
+          axios.delete('http://localhost:3000/api/article/:' + id, 
+          { userId: userId, id: id });
       },
       fetchGetAllArticles() {
           axios.get('http://localhost:3000/api/article')
           .then((response) => {
-              console.log(response.data);
+              const results = JSON.parse(response.data);
+              this.articleList = results;
           });
       },
       modify()
       {
-          this.isClicked = false;
+        this.isClicked = false;
       },
       confirm()
       {
           this.isClicked = true;
-      }
+      },
+      isConnected(id)
+      {
+          const userId = sessionStorage.getItem('userId');
+          if(userId == id)
+          {
+              return true;
+          }
+          else
+          {
+              return false;
+          }
+      },
   }
 }
 </script>
