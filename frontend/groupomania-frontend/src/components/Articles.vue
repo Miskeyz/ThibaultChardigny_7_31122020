@@ -10,18 +10,18 @@
                 <p>Né le 04/09/1991</p>
             </div>
             <div class="articles">
-                <form @input="unlockButton" @submit="fetchCreateArticle">
+                <form @input="unlockButton" @submit.prevent="fetchCreateArticle" class="form-article">
                     <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea"></textarea><br>
                     <input type="submit" id="publier" class="button" value="Publier" disabled />
                 </form>
-                <div class="last-articles">
+                <div class="last-articles" v-if="isClicked">
                     <div class="last-articles__row">
                         <div>
                             <h2 class="last-articles__heading">Thibault Chardigny</h2>
                         </div>
                         <div>
-                            <button class="last-articles__button" id="modify">Modifier</button>
-                            <button class="last-articles__button" id="delete">Supprimer</button>
+                            <button class="last-articles__button" id="modify" @click="modify">Modifier</button>
+                            <button class="last-articles__button" id="delete" @click="fetchDeleteArticle">Supprimer</button>
                         </div>
                     </div>
                     <p class="last-articles__content">
@@ -34,6 +34,21 @@
                     </p>
                     <button @click="liked" class="last-articles__like" id="like">J'aime</button>
                 </div>
+                <div class="last-articles" v-else>
+                    <div>
+                        <h2 class="last-articles__heading">Thibault Chardigny</h2>
+                    </div>
+                    <form @submit.prevent="fetchModifyArticle">
+                    <textarea id="modify-textarea">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
+                        a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, 
+                        but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 
+                        1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
+                        publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                    </textarea>
+                    <input @click="confirm" class="last-articles__button" id="submitModify" value="Valider" /></form>
+                </div>
             </div>
         </div>
     </div>
@@ -44,6 +59,14 @@ import axios from 'axios';
 
 export default {
   name: 'Articles',
+  data: function() {
+      return{
+          isClicked: true
+      }
+  },
+  created () {
+    this.fetchGetAllArticles();
+  },
   methods: {
       verifTextarea() {
           const regex = /^[A-Za-z-,;!@#€$ùèçéà&“_/§?\s()]+$/;
@@ -84,12 +107,34 @@ export default {
       },
       fetchCreateArticle() {
           const content = document.getElementById('textarea').value;
+          const userId = sessionStorage.getItem('userId');
           axios.post('http://localhost:3000/api/article', 
-          { content: content });
+          { content: content, userId: userId });
+      },
+      fetchModifyArticle() {
+          const content = document.getElementById('textarea').value;
+          const userId = sessionStorage.getItem('userId');
+          axios.put('http://localhost:3000/api/article/:id', 
+          { content: content, userId: userId });
+      },
+      fetchDeleteArticle() {
+          const userId = sessionStorage.getItem('userId');
+          axios.delete('http://localhost:3000/api/article/:id', 
+          { userId: userId });
       },
       fetchGetAllArticles() {
           axios.get('http://localhost:3000/api/article')
-          .then(response => response.data);
+          .then((response) => {
+              console.log(response.data);
+          });
+      },
+      modify()
+      {
+          this.isClicked = false;
+      },
+      confirm()
+      {
+          this.isClicked = true;
       }
   }
 }
@@ -104,10 +149,16 @@ h1
     font-size: 2.5em;
 }
 
+#modify-textarea
+{
+    width: 90%;
+    height: 200px;
+}
+
 textarea
 {
-    margin-top: 20px;
     width: 80%;
+    margin-top: 20px;
     height: 100px;
     border-radius: 20px;
     border: 2px solid #2c3e50;
@@ -122,12 +173,10 @@ textarea
     }
 }
 
-form
+.form-article
 {
     width: 100%;
     height: 200px;
-    border-left: 1px solid #2c3e50;
-    border-right: 1px solid #2c3e50;
     margin-bottom: 50px;
 }
 
@@ -184,6 +233,7 @@ form
         color: #fd2e01;
         background-color: #fff;
         font-weight: 600;
+        text-align: center;
         cursor: pointer;
         &:hover, &:focus
         {
@@ -209,7 +259,6 @@ form
 .profil
 {
     flex: 1;
-    border-left: 1px solid #2c3e50;
 }
 
 .articles

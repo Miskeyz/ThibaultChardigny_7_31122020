@@ -3,9 +3,17 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const mysql = require('mysql');
 
-nomPrenomRegex = /^[A-Za-z-]*$/;
-mdpRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-emailRegex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
+const nomPrenomRegex = /^[A-Za-z-]*$/;
+const mdpRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const emailRegex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    port: '8889',
+    database: 'Groupomania'
+  });
 
 exports.signup = (req, res, next) =>
 {
@@ -14,14 +22,6 @@ exports.signup = (req, res, next) =>
         const email = req.body.email;
         const emailBuffer = Buffer.from(email);
         const emailMasked = emailBuffer.toString('base64');
-
-        const connection = mysql.createConnection({
-            host: 'localhost',
-            user: 'root',
-            password: 'root',
-            port: '8889',
-            database: 'Groupomania'
-          });
 
         let emailAlreadyUsed;
         const searchEmailData = `SELECT email FROM users WHERE email = "${emailMasked}"`;
@@ -54,13 +54,6 @@ exports.login = (req, res, next) =>
 {
     if(mdpRegex.test(req.body.password) && emailRegex.test(req.body.email))
     {
-        const connection = mysql.createConnection({
-            host: 'localhost',
-            user: 'root',
-            password: 'root',
-            port: '8889',
-            database: 'Groupomania'
-          });
         const email = req.body.email;
         const emailBuffer = Buffer.from(email);
         const emailMasked = emailBuffer.toString('base64');
@@ -89,7 +82,6 @@ exports.login = (req, res, next) =>
             })
             .catch(error => res.status(500).json({ error }));
         })
-        connection.end();
     }
     else
     {
