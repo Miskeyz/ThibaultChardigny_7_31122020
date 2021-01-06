@@ -4,10 +4,11 @@ module.exports = (req, res, next) =>
 {
     try 
     {
-      let token = req.headers.authorization.split(' ')[1];
+      let token = sessionStorage.getItem('token').split(' ')[1];
       let decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
       let userId = decodedToken.userId;
-      if (req.body.userId && req.body.userId !== userId) 
+      let storageUserId = sessionStorage.getItem('userId');
+      if (storageUserId && storageUserId !== userId) 
       {
         throw 'User ID invalide!';
       } 
