@@ -2,7 +2,7 @@ const Article = require('../models/Article');
 const fs = require('fs');
 const mysql = require('mysql');
 
-const regex = /^[A-Za-z0-9-,.?:;!çéèà()&\s]+$/;
+const regex = /^[A-Za-z0-9-,.;!@#€$ùèçéà&“'_/§?\s()]+$/;
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -58,10 +58,12 @@ exports.getOneArticle = (req, res, next) =>
 
 exports.getAllArticles = (req, res, next) =>
 {
-  const data = `SELECT * FROM articles`;
+  const data = `SELECT articles.id, articles.userId, articles.content, users.nom, users.prenom FROM articles INNER JOIN users ON articles.userId = users.id ORDER BY articles.id DESC`;
   connection.query(data, function(error, results)
     {
       console.log('Articles chargés !');
+      const jsonResults = JSON.stringify(results);
+      res.status(200).json(jsonResults);
     })
 };
 
