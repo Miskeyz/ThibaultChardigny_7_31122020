@@ -1,14 +1,14 @@
-const jwt = require("jsonwebtoken");
+let jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => 
 {
     try 
     {
-      let token = sessionStorage.getItem('token').split(' ')[1];
+      let token = req.headers.authorization.split(' ')[1];
+      console.log(req.headers.authorization);
       let decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
       let userId = decodedToken.userId;
-      let storageUserId = sessionStorage.getItem('userId');
-      if (storageUserId && storageUserId !== userId) 
+      if (req.body.userId && req.body.userId !== userId) 
       {
         throw 'User ID invalide!';
       } 

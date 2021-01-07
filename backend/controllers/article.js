@@ -41,7 +41,9 @@ exports.modifyArticle = (req, res, next) =>
 
 exports.deleteArticle = (req, res, next) =>
 {
+  console.log(req.body.id);
   const data = `DELETE FROM articles WHERE id="${req.body.id}"`;
+  console.log(data);
   connection.query(data, function(err, res) {
   console.log('Article supprimé !');
   });
