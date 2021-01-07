@@ -2,7 +2,7 @@ const Article = require('../models/Article');
 const fs = require('fs');
 const mysql = require('mysql');
 
-const regex = /^[A-Za-z0-9-,.;!@#€$ùèçéà&“'_/§?\s()]+$/;
+const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'_/§?\s()]+$/;
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -41,9 +41,7 @@ exports.modifyArticle = (req, res, next) =>
 
 exports.deleteArticle = (req, res, next) =>
 {
-  console.log(req.body.id);
   const data = `DELETE FROM articles WHERE id="${req.body.id}"`;
-  console.log(data);
   connection.query(data, function(err, res) {
   console.log('Article supprimé !');
   });
@@ -51,10 +49,13 @@ exports.deleteArticle = (req, res, next) =>
 
 exports.getOneArticle = (req, res, next) =>
 {
-  const data = `SELECT * FROM articles WHERE id="${req.body.id}"`;
+  console.log(req.params.id);
+  const data = `SELECT * FROM articles WHERE id="${req.params.id}"`;
   connection.query(data, function(error, results)
     {
-      console.log('Articles n°' + req.body.id + ' chargés !');
+      console.log('Articles n°' + req.params.id + ' chargés !');
+      const jsonResults = JSON.stringify(results);
+      res.status(200).json(jsonResults);
     })
 };
 
@@ -71,5 +72,5 @@ exports.getAllArticles = (req, res, next) =>
 
 exports.postLike = (req, res, next) =>
 {
-
+  console.log(req.body.isLiked);
 };

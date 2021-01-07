@@ -4,11 +4,11 @@ module.exports = (req, res, next) =>
 {
     try 
     {
-      let token = req.headers.authorization.split(' ')[1];
-      console.log(req.headers.authorization);
-      let decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
-      let userId = decodedToken.userId;
-      if (req.body.userId && req.body.userId !== userId) 
+      const token = req.headers.authorization;
+      const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
+      const userId = decodedToken.userId;
+      const reqUserId = parseInt(req.body.userId);
+      if (reqUserId && reqUserId !== userId) 
       {
         throw 'User ID invalide!';
       } 
@@ -17,7 +17,7 @@ module.exports = (req, res, next) =>
         next();
       }
     } 
-    catch 
+    catch (error)
     {
       res.status(401).json({ error: error | "Requête non authentifiée!" });
     }

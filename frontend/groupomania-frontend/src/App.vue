@@ -20,8 +20,7 @@ export default {
     ...mapActions(['disconnect']),
     isConnected() {
       const token = sessionStorage.getItem('token');
-      const userId = sessionStorage.getItem('userId');
-      if(token && userId)
+      if(token)
       {
         return false
       }

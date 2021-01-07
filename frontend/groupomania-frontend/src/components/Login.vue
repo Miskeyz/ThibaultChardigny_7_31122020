@@ -83,7 +83,6 @@ export default {
           { email: email, password: password })
           .then ((response) => {
               sessionStorage.setItem('token', response.data.token);
-              sessionStorage.setItem('userId', response.data.userId);
               window.location.reload();
           });
       },
