@@ -3,7 +3,7 @@
         <div class="header">
             <h1>Bonjour Thibault !</h1>
         </div>
-        <div class='body'>
+        <div class='body body-block'>
             <div class="profil">
                 <h2>Profil</h2>
                 <p>Thibault Chardigny</p>
@@ -15,7 +15,7 @@
                     <input type="submit" id="publier" class="button" value="Publier" disabled />
                 </form>
                 <div v-for="item in articleList" v-bind:key="item.id">
-                    <div class="last-articles" v-if="isClicked">
+                    <div class="last-articles">
                         <div class="last-articles__row">
                             <div>
                                 <h2 class="last-articles__heading">{{ item.prenom }} {{ item.nom }}</h2>
@@ -28,32 +28,42 @@
                         <p class="last-articles__content">
                             {{ item.content }}
                         </p>
-                        <button @click="liked" class="last-articles__like" id="like">J'aime</button>
-                    </div>
-                    <div class="last-articles" v-else>
-                        <div>
-                            <h2 class="last-articles__heading">{{ item.prenom }} {{ item.nom }}</h2>
-                        </div>
-                        <form @submit.prevent="fetchModifyArticle(item.id), confirm()">
-                        <textarea id="modify-textarea" v-model="item.content" required></textarea>
-                        <input type="submit" class="last-articles__button" id="submitModify" value="Valider" /></form>
+                        <button @click="liked(item.id)" class="last-articles__like" id="like">J'aime</button>
                     </div>
                 </div>
             </div>
+                <div class="popup-modify" v-show="isClicked">
+                    <div class="popup-modify__form">
+                        <form @input="unlockButton" @submit.prevent="fetchModifyArticle(article[0].id)" class="form-article">
+                            <textarea id="modify-textarea" required v-model="article[0].content"></textarea><br>
+                            <input type="submit" id="publier" class="button" value="Publier" @click="confirm()" />
+                            <button class="popup-modify__closeme" @click.prevent="confirm()">X</button>
+                        </form>   
+                    </div>
+                </div>
+                <div class="opacity-block" v-show="isClicked">
+                </div>
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import jsonwebtoken from 'jsonwebtoken';
 
 export default {
   name: 'Articles',
   data: function() {
       return{
           articleList: [],
-          isClicked: true,
-          token: sessionStorage.getItem('token')
+          article: [
+              {
+                  content: '',
+              }
+          ],
+          isClicked: false,
+          token: sessionStorage.getItem('token'),
+          userId: '',
       }
   },
   created () {
@@ -61,7 +71,7 @@ export default {
   },
   methods: {
       verifTextarea() {
-          const regex = /^[A-Za-z0-9-,.;!@#€$ùèçéà&“'_/§?\s()]+$/;
+          const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'_/§?\s()]+$/;
           const input = document.getElementById('textarea');
           if(regex.test(input.value))
           {
@@ -84,7 +94,7 @@ export default {
               button.setAttribute('disabled', 'true');
           }
       },
-      liked() {
+      liked(id) {
           const likeButton = document.getElementById('like');
           const isLiked = document.getElementsByClassName('last-articles__like--liked').length;
           if(isLiked != 0)
@@ -95,19 +105,20 @@ export default {
           {
               likeButton.classList.add('last-articles__like--liked');
           }
+          axios.post('http://localhost:3000/api/article/' + id + '/like', 
+          { isLiked: isLiked, id: id }, {headers: { 'Authorization': this.token }});
       },
       fetchCreateArticle() {
           const content = document.getElementById('textarea').value;
-          const userId = sessionStorage.getItem('userId');
           axios.post('http://localhost:3000/api/article', 
-          { content: content, userId: userId }, {headers: { 'Authorization': this.token }});
+          { content: content, userId: this.userId }, {headers: { 'Authorization': this.token }});
           window.location.reload();
       },
       fetchModifyArticle(id) {
           const content = document.getElementById('modify-textarea').value;
-          const userId = sessionStorage.getItem('userId');
           axios.put('http://localhost:3000/api/article/' + id, 
-          { content: content, userId: userId, id: id }, {headers: { 'Authorization': this.token }});
+          { content: content, userId: this.userId, id: id }, {headers: { 'Authorization': this.token }});
+          window.location.reload();
       },
       fetchDeleteArticle(id) {
           axios.delete('http://localhost:3000/api/article/' + id, 
@@ -123,30 +134,24 @@ export default {
       },
       modify(id)
       {
-        const buttonModify = parseInt(document.getElementById(id).id);
-        console.log(id);
-        console.log(buttonModify);
-        if(buttonModify === id)
-        {
-            this.isClicked = false;
-        }
-        else
-        {
-            this.isClicked = true;
-        }
-      },
-      whichModify()
-      {
-
+        axios.get('http://localhost:3000/api/article/' + id, { headers: { 'Authorization': this.token }})
+        .then((response) => {
+            const results = JSON.parse(response.data);
+            this.article = results;
+        });
+        return this.isClicked = true;
+        
       },
       confirm()
       {
-          this.isClicked = true;
+          this.isClicked = false;
       },
       isConnected(id)
       {
-          const userId = sessionStorage.getItem('userId');
-          if(userId == id)
+        const token = sessionStorage.getItem('token');
+        const decodedToken = jsonwebtoken.verify(token, "RANDOM_TOKEN_SECRET");
+        this.userId = decodedToken.userId;
+          if(this.userId == id)
           {
               return true;
           }
@@ -171,7 +176,7 @@ h1
 #modify-textarea
 {
     width: 90%;
-    height: 200px;
+    height: 350px;
 }
 
 textarea
@@ -330,6 +335,59 @@ textarea
 .green-border-articles
 {
     border: 2px solid green;
+}
+
+.opacity-block
+{
+    width: 200%;
+    height: 200%;
+    margin-left: -200px;
+    margin-top: -350px;
+    position: absolute;
+    background: #fff;
+    opacity: 70%;
+}
+
+.popup-modify
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+
+    &__form
+    {
+        border-radius: 35px;
+        width: 50%;
+        height: 50%;
+        margin: auto;
+        margin-top: 50vh;
+        background-color: #fff;
+        transform: translateY(-50%);
+    }
+
+    &__closeme
+    {
+        border-radius: 50%;
+        padding: 2px 7px;
+        font-size: 1.4em;
+        font-weight: 600;
+        color: #fff;
+        border-color: #fd2e01;
+        background-color: #fd2e01;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        cursor: pointer;
+        &:hover, &:focus
+        {
+            background-color: #fff;
+            color: #fd2e01;
+        }
+    }
 }
 
 </style>
