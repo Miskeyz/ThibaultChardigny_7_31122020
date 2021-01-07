@@ -11,7 +11,7 @@
             </div>
             <div class="articles">
                 <form @input="unlockButton" @submit.prevent="fetchCreateArticle" class="form-article">
-                    <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea"></textarea><br>
+                    <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea" required></textarea><br>
                     <input type="submit" id="publier" class="button" value="Publier" disabled />
                 </form>
                 <div v-for="item in articleList" v-bind:key="item.id">
@@ -21,7 +21,7 @@
                                 <h2 class="last-articles__heading">{{ item.prenom }} {{ item.nom }}</h2>
                             </div>
                             <div>
-                                <button class="last-articles__button" id="modify" v-show="isConnected(item.userId)" @click="modify()">Modifier</button>
+                                <button class="last-articles__button" :id="item.id" v-show="isConnected(item.userId)" @click="modify(item.id)">Modifier</button>
                                 <button class="last-articles__button" id="delete" v-show="isConnected(item.userId)" @click="fetchDeleteArticle(item.id)">Supprimer</button>
                             </div>
                         </div>
@@ -32,18 +32,11 @@
                     </div>
                     <div class="last-articles" v-else>
                         <div>
-                            <h2 class="last-articles__heading">Thibault Chardigny</h2>
+                            <h2 class="last-articles__heading">{{ item.prenom }} {{ item.nom }}</h2>
                         </div>
-                        <form @submit.prevent="fetchModifyArticle">
-                        <textarea id="modify-textarea">
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took 
-                            a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, 
-                            but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 
-                            1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
-                            publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                        </textarea>
-                        <input @click="confirm" class="last-articles__button" id="submitModify" value="Valider" /></form>
+                        <form @submit.prevent="fetchModifyArticle(item.id), confirm()">
+                        <textarea id="modify-textarea" v-model="item.content" required></textarea>
+                        <input type="submit" class="last-articles__button" id="submitModify" value="Valider" /></form>
                     </div>
                 </div>
             </div>
@@ -58,8 +51,9 @@ export default {
   name: 'Articles',
   data: function() {
       return{
+          articleList: [],
           isClicked: true,
-          articleList: []
+          token: sessionStorage.getItem('token')
       }
   },
   created () {
@@ -106,30 +100,44 @@ export default {
           const content = document.getElementById('textarea').value;
           const userId = sessionStorage.getItem('userId');
           axios.post('http://localhost:3000/api/article', 
-          { content: content, userId: userId });
+          { content: content, userId: userId }, {headers: { 'Authorization': this.token }});
           window.location.reload();
       },
       fetchModifyArticle(id) {
-          const content = document.getElementById('textarea').value;
+          const content = document.getElementById('modify-textarea').value;
           const userId = sessionStorage.getItem('userId');
-          axios.put('http://localhost:3000/api/article/:' + id, 
-          { content: content, userId: userId, id: id });
+          axios.put('http://localhost:3000/api/article/' + id, 
+          { content: content, userId: userId, id: id }, {headers: { 'Authorization': this.token }});
       },
       fetchDeleteArticle(id) {
-          const userId = sessionStorage.getItem('userId');
-          axios.delete('http://localhost:3000/api/article/:' + id, 
-          { userId: userId, id: id });
+          axios.delete('http://localhost:3000/api/article/' + id, 
+          { data: { id: id }, headers: {'Authorization': this.token}});
+          window.location.reload();
       },
       fetchGetAllArticles() {
-          axios.get('http://localhost:3000/api/article')
+          axios.get('http://localhost:3000/api/article', { headers: { 'Authorization': this.token }})
           .then((response) => {
               const results = JSON.parse(response.data);
               this.articleList = results;
           });
       },
-      modify()
+      modify(id)
       {
-        this.isClicked = false;
+        const buttonModify = parseInt(document.getElementById(id).id);
+        console.log(id);
+        console.log(buttonModify);
+        if(buttonModify === id)
+        {
+            this.isClicked = false;
+        }
+        else
+        {
+            this.isClicked = true;
+        }
+      },
+      whichModify()
+      {
+
       },
       confirm()
       {
