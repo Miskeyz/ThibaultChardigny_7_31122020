@@ -2,7 +2,7 @@ const Article = require('../models/Article');
 const fs = require('fs');
 const mysql = require('mysql');
 
-const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'_/§?\s()]+$/;
+const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&’“'_/§?\s()]+$/;
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -49,7 +49,6 @@ exports.deleteArticle = (req, res, next) =>
 
 exports.getOneArticle = (req, res, next) =>
 {
-  console.log(req.params.id);
   const data = `SELECT * FROM articles WHERE id="${req.params.id}"`;
   connection.query(data, function(error, results)
     {
@@ -68,9 +67,4 @@ exports.getAllArticles = (req, res, next) =>
       const jsonResults = JSON.stringify(results);
       res.status(200).json(jsonResults);
     })
-};
-
-exports.postLike = (req, res, next) =>
-{
-  console.log(req.body.isLiked);
 };

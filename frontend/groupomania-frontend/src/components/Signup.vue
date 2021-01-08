@@ -135,6 +135,29 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+$breakpoints: 
+(
+	mobile: 500px,
+	tablette: 900px
+);
+
+@mixin mobile-only
+{
+	@media screen and (max-width: map-get($breakpoints, mobile))
+	{
+		@content;
+	}
+}
+
+@mixin tablette-only
+{
+	@media screen and (max-width: map-get($breakpoints, tablette))
+	{
+		@content;
+	}
+}
+
 h1
 {
   margin-top: 50px;
@@ -158,6 +181,17 @@ h2
   margin-top: -10px;
   padding-left: 185px;
   text-align: justify;
+  @include mobile-only
+  {
+      padding-left: 0;
+      margin-top: 10px;
+  }
+  @include tablette-only
+  {
+      padding-left: 0;
+      margin-top: 10px;
+      text-align: center;
+  }
 }
 
 .form-block
@@ -169,18 +203,46 @@ h2
   box-shadow: 0px 7px 15px 0px #000000;
   width: 900px;
 
+  @include mobile-only
+  {
+      width: auto;
+      box-shadow: none;
+  }
+
+  @include tablette-only
+  {
+      width: 90%;
+  }
+
   &__top
   {
     width: 100%;
     height: 200px;
     background: no-repeat url('../images/signup.png');
     border-radius: 20px 20px 0 0;
+
+    @include mobile-only
+    {
+        background: center url('../images/signup.png');
+        background-size: cover;
+    }
   }
 
   &__bottom
   {
       padding-left: 150px;
       padding-right: 150px;
+
+      @include mobile-only
+      {
+          padding: 15px;
+      }
+
+      @include tablette-only
+      {
+          padding-left: 50px;
+          padding-right: 50px;
+      }
   }
 }
 
@@ -193,6 +255,11 @@ h2
   margin-bottom: 20px;
   padding-left: 15px;
   font-size: 1.2em;
+
+  @include mobile-only
+  {
+      width: 100%;
+  }
 
   &:hover, &:focus
   {
@@ -239,6 +306,11 @@ h2
     font-size: 1.2em;
     color: #fff;
     cursor: pointer;
+
+    @include mobile-only
+    {
+        width: 35%;
+    }
 
     &:hover
     {

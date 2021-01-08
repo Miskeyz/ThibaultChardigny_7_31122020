@@ -1,14 +1,10 @@
 <template>
     <div class="content">
         <div class="header">
-            <h1>Bonjour Thibault !</h1>
+            <h1>Bonjour {{ this.userPrenom }} !</h1>
+            <button class="delete-button" @click.prevent="fetchDeleteUser()">Supprimer mon compte</button>
         </div>
         <div class='body body-block'>
-            <div class="profil">
-                <h2>Profil</h2>
-                <p>Thibault Chardigny</p>
-                <p>Né le 04/09/1991</p>
-            </div>
             <div class="articles">
                 <form @input="unlockButton" @submit.prevent="fetchCreateArticle" class="form-article">
                     <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea" required></textarea><br>
@@ -28,7 +24,6 @@
                         <p class="last-articles__content">
                             {{ item.content }}
                         </p>
-                        <button @click="liked(item.id)" class="last-articles__like" id="like">J'aime</button>
                     </div>
                 </div>
             </div>
@@ -36,7 +31,7 @@
                     <div class="popup-modify__form">
                         <form @input="unlockButton" @submit.prevent="fetchModifyArticle(article[0].id)" class="form-article">
                             <textarea id="modify-textarea" required v-model="article[0].content"></textarea><br>
-                            <input type="submit" id="publier" class="button" value="Publier" @click="confirm()" />
+                            <input type="submit" id="publier" class="button" value="Sauver" @click="confirm()" />
                             <button class="popup-modify__closeme" @click.prevent="confirm()">X</button>
                         </form>   
                     </div>
@@ -61,6 +56,8 @@ export default {
                   content: '',
               }
           ],
+          userNom: '',
+          userPrenom: '',
           isClicked: false,
           token: sessionStorage.getItem('token'),
           userId: '',
@@ -68,10 +65,11 @@ export default {
   },
   created () {
     this.fetchGetAllArticles();
+    this.fetchGetUserInfos();
   },
   methods: {
       verifTextarea() {
-          const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'_/§?\s()]+$/;
+          const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'’_/§?\s()]+$/;
           const input = document.getElementById('textarea');
           if(regex.test(input.value))
           {
@@ -93,20 +91,6 @@ export default {
           {      
               button.setAttribute('disabled', 'true');
           }
-      },
-      liked(id) {
-          const likeButton = document.getElementById('like');
-          const isLiked = document.getElementsByClassName('last-articles__like--liked').length;
-          if(isLiked != 0)
-          {
-              likeButton.classList.remove('last-articles__like--liked'); 
-          }
-          else
-          {
-              likeButton.classList.add('last-articles__like--liked');
-          }
-          axios.post('http://localhost:3000/api/article/' + id + '/like', 
-          { isLiked: isLiked, id: id }, {headers: { 'Authorization': this.token }});
       },
       fetchCreateArticle() {
           const content = document.getElementById('textarea').value;
@@ -131,6 +115,23 @@ export default {
               const results = JSON.parse(response.data);
               this.articleList = results;
           });
+      },
+      fetchGetUserInfos() {
+            const token = sessionStorage.getItem('token');
+            const decodedToken = jsonwebtoken.verify(token, "RANDOM_TOKEN_SECRET");
+            this.userId = decodedToken.userId;
+            axios.get('http://localhost:3000/api/auth/' + this.userId, { headers: { 'Authorization': this.token }})
+          .then((response) => {
+              const results = JSON.parse(response.data);
+              this.userNom = results[0].nom;
+              this.userPrenom = results[0].prenom;
+          });
+      },
+      fetchDeleteUser() {
+          axios.delete('http://localhost:3000/api/auth/' + this.userId, 
+          { headers: {'Authorization': this.token}});
+          sessionStorage.removeItem('token');
+          window.location.reload();
       },
       modify(id)
       {
@@ -166,17 +167,54 @@ export default {
 
 <style scoped lang='scss'>
 
+$breakpoints: 
+(
+	mobile: 500px,
+	tablette: 900px
+);
+
+@mixin mobile-only
+{
+	@media screen and (max-width: map-get($breakpoints, mobile))
+	{
+		@content;
+	}
+}
+@mixin tablette-only
+{
+	@media screen and (max-width: map-get($breakpoints, tablette))
+	{
+		@content;
+	}
+}
+
 h1
 {
     color: #fff;
-    padding-top: 220px;
+    padding-top: 210px;
     font-size: 2.5em;
+    margin-bottom: 0;
+
+    @include mobile-only
+    {
+        font-size: 2em;
+        padding-top: 230px;
+    }
 }
 
-#modify-textarea
+.delete-button
 {
-    width: 90%;
-    height: 350px;
+    margin-top: 0;
+    color: #fd2e01;
+    background-color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 3px 5px;
+    &:hover, &:focus
+    {
+        background-color: #fd2e01;
+        color: #fff;
+    }
 }
 
 textarea
@@ -219,6 +257,10 @@ textarea
     {
         font-size: 1em;
         margin-bottom: 0;
+        @include mobile-only
+        {
+            text-align: left;
+        }
     }
 
     &__content
@@ -246,6 +288,10 @@ textarea
         display: flex;
         justify-content: space-between;
         align-items: center;
+        @include mobile-only
+        {
+            flex-direction: column;
+        }
     }
 
     &__button
@@ -259,6 +305,11 @@ textarea
         font-weight: 600;
         text-align: center;
         cursor: pointer;
+
+        @include mobile-only
+        {
+            margin-top: 10px;
+        }
         &:hover, &:focus
         {
             background-color: #fd2e01;
@@ -273,6 +324,16 @@ textarea
     border-radius: 50px 50px 0 0;
     width: 1200px;
     margin: auto;
+
+    @include mobile-only
+    {
+        width: auto;
+    }
+
+    @include tablette-only
+    {
+        width: auto;
+    }
 }
 
 .body
@@ -295,8 +356,14 @@ textarea
     height: 300px;
     margin-top: 50px;
     border-radius: 50px 50px 0 0;
-    background: url(../images/header.jpg) no-repeat;
+    background: url('../images/header.jpg') no-repeat;
     box-shadow: 0px 0px 10px 0px #000000;
+
+    @include mobile-only
+    {
+        background: url('../images/header.jpg') no-repeat center;
+        background-size: cover;
+    }
 }
 
 .button
@@ -346,17 +413,50 @@ textarea
     position: absolute;
     background: #fff;
     opacity: 70%;
+
+    @include mobile-only
+    {
+        width: 200%;
+        top: 450px;
+        left: 0;
+    }
+}
+
+#modify-textarea
+{
+    width: 90%;
+    height: 350px;
+    @include mobile-only
+    {
+        margin-top: 5px;
+        height: 320px;
+        width: 85%;
+    }
 }
 
 .popup-modify
 {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-18%, -40%);
     z-index: 10;
+
+    @include mobile-only
+    {
+        width: 100%;
+        height: 365px;
+        transform: translate(-16%, -100%);
+    }
+
+    @include tablette-only
+    {
+        width: 100%;
+        height: 365px;
+        transform: translate(-21.5%, -140%);
+    }
+
+
 
     &__form
     {
@@ -367,6 +467,13 @@ textarea
         margin-top: 50vh;
         background-color: #fff;
         transform: translateY(-50%);
+
+        @include mobile-only
+        {
+            width: 55%;
+            height: 100%;
+            border-radius: 25px;
+        }
     }
 
     &__closeme
@@ -382,6 +489,12 @@ textarea
         top: -10px;
         right: -10px;
         cursor: pointer;
+
+        @include mobile-only
+        {
+            top: -10px;
+            right: -10px;
+        }
         &:hover, &:focus
         {
             background-color: #fff;
