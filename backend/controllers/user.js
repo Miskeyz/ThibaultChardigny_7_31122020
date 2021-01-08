@@ -87,3 +87,25 @@ exports.login = (req, res, next) =>
         throw 'Données saisies non valides !'
     }
 };
+
+exports.getUserInfos = (req, res, next) =>
+{
+    const userId = parseInt(req.params.id);
+    const data = `SELECT nom, prenom FROM users WHERE id="${userId}"`;
+    connection.query(data, function(error, results)
+    {
+      console.log('User infos chargées !');
+      const jsonResults = JSON.stringify(results);
+      res.status(200).json(jsonResults);
+    })
+};
+
+exports.deleteUser = (req, res, next) =>
+{
+    const userId = parseInt(req.params.id);
+    const data = `DELETE FROM users WHERE id="${userId}"`;
+    connection.query(data, function(error, results)
+    {
+      console.log('User supprimé !');
+    })
+};

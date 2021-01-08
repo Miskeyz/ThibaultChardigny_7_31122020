@@ -83,4 +83,28 @@ export default {
     }
   }
 }
+
+$breakpoints: 
+(
+	mobile: 500px,
+	tablette: 900px
+);
+
+@mixin mobile-only
+{
+	@media screen and (max-width: map-get($breakpoints, mobile))
+	{
+		@content;
+	}
+}
+
+@mixin tablette-only
+{
+	@media screen and (max-width: map-get($breakpoints, tablette))
+	{
+		@content;
+	}
+}
+
+
 </style>

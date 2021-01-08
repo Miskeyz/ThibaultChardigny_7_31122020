@@ -3,7 +3,7 @@
     <h1>Bienvenue sur le réseau social de Groupomania !</h1>
     <p class="text">Si vous possedez déjà votre compte alors connectez vous ci-dessous !</p>
     <Login />
-    <p class="text">Sinon veuillez vous inscrire : <router-link to="/inscription" class="button button__inscription">Inscription</router-link></p>
+    <p class="text">Sinon veuillez vous inscrire :</p> <router-link to="/inscription" class="button button__inscription">Inscription</router-link>
   </div>
 </template>
 
@@ -19,6 +19,21 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+$breakpoints: 
+(
+	mobile: 500px,
+	tablette: 900px
+);
+
+@mixin mobile-only
+{
+	@media screen and (max-width: map-get($breakpoints, mobile))
+	{
+		@content;
+	}
+}
+
 h1
 {
   margin-top: 50px;
@@ -43,7 +58,8 @@ h1
     text-decoration: none;
     padding: 5px 25px;
     border: 2px black solid;
-    font-size: 1em;
+    font-size: 1.2em;
+    font-weight: 500;
 
     &:hover
     {

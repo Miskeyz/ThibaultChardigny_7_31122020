@@ -93,6 +93,27 @@ export default {
 
 <style scoped lang="scss">
 
+$breakpoints: 
+(
+	mobile: 500px,
+	tablette: 900px
+);
+
+@mixin mobile-only
+{
+	@media screen and (max-width: map-get($breakpoints, mobile))
+	{
+		@content;
+	}
+}
+@mixin tablette-only
+{
+	@media screen and (max-width: map-get($breakpoints, tablette))
+	{
+		@content;
+	}
+}
+
 h2
 {
   width: 73%;
@@ -114,17 +135,42 @@ h2
   box-shadow: 0px 7px 15px 0px #000000;
   width: 900px;
 
+  @include mobile-only
+  {
+      width: auto;
+      flex-direction: column;
+  }
+  @include tablette-only
+  {
+      width: 90%;
+  }
+
   &__left
   {
     width: 33%;
     height: 500px;
     background: no-repeat url('../images/form.png');
     border-radius: 20px 0 0 20px;
+
+    @include mobile-only
+  {
+      background: no-repeat center url('../images/header.jpg');
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      background-size: cover;
+      height: 100px;
+  }
   }
 
   &__right
   {
     width: 67%;
+
+    @include mobile-only
+    {
+        width: 100%;
+        padding-bottom: 40px;
+    }
   }
 }
 
@@ -137,6 +183,11 @@ h2
   margin-bottom: 10px;
   padding-left: 15px;
   font-size: 1.2em;
+
+    @include mobile-only
+    {
+        width: 80%;
+    }
 
   &:hover, &:focus
   {
@@ -171,6 +222,11 @@ h2
     font-size: 1.2em;
     color: #fff;
     cursor: pointer;
+
+    @include mobile-only
+    {
+        width: 35%;
+    }
 
     &:hover
     {
