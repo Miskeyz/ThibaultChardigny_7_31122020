@@ -19,60 +19,40 @@ import axios from 'axios';
 
 export default {
   name: 'HelloWorld',
+  data: function() {
+      return {
+        regexEmail: /^[a-z-]+[.]*[a-z-]+@groupomania.fr$/,
+        regexMdp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        messageEmail: 'Merci d\'entrer un email valide',
+        messageMdp: 'Merci d\'entrer un mot de passe valide'
+      }
+  },
   methods: {
       formVerif(regex, message, input, error) {
-          if(regex.test(input.value))
-          {
+        if(regex.test(input.value)) {
               error.textContent = '';
               input.classList.add('green-border');
-          }
-          else
-          {
+          } else {
               input.classList.remove('green-border');
               error.textContent = message;
-          }
-      },
+          }      
+    },
       verifEmail() {
-          const regex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
-          const message = 'Merci d\'entrer un email valide';
           const input = document.getElementById('email');
           const error = document.getElementById('error');
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
+          this.formVerif(this.regexEmail, this.messageEmail, input, error);
       },
       verifMdp() {
-          const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-          const message = 'Merci d\'entrer un mot de passe valide';
           const input = document.getElementById('password');
           const error = document.getElementById('error');
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
+          this.formVerif(this.regexMdp, this.messageMdp, input, error);
       },
       unlockButton() {
           const greenBorder = document.getElementsByClassName('green-border');
           const button = document.getElementById('submit');
-          if(greenBorder.length === 2)
-          {
+          if(greenBorder.length === 2) {
               button.removeAttribute('disabled');
-          }
-          else
-          {      
+          } else {      
               button.setAttribute('disabled', 'true');
           }
       },
@@ -99,6 +79,10 @@ $breakpoints:
 	tablette: 900px
 );
 
+$primary-color: #E9190E;
+$white-color: #fff;
+$secondary-color: #2c3e50;
+
 @mixin mobile-only
 {
 	@media screen and (max-width: map-get($breakpoints, mobile))
@@ -122,7 +106,7 @@ h2
   margin-bottom: 30px;
   padding-bottom: 20px;
   font-size: 2.5em;
-  border-bottom: #2C3E4F 2px solid;
+  border-bottom: $secondary-color 2px solid;
 }
 
 .form-block
@@ -191,7 +175,7 @@ h2
 
   &:hover, &:focus
   {
-    border: #fd2e01 2px solid;
+    border: $primary-color 2px solid;
   }
 }
 
@@ -203,7 +187,7 @@ h2
 .error
 {
   margin-top: 0;
-  color: #fd2e01;
+  color: $primary-color;
   font-weight: 600;
 }
 
@@ -218,7 +202,7 @@ h2
     height: 40px;
     border-radius: 10px;
     margin-top: 20px;
-    background-color: #fd2e01;
+    background-color: $primary-color;
     font-size: 1.2em;
     color: #fff;
     cursor: pointer;
@@ -230,19 +214,19 @@ h2
 
     &:hover
     {
-      background-color: #fff;
-      color: #fd2e01;
-      border: 2px solid #fd2e01;
+      background-color: $white-color;
+      color: $primary-color;
+      border: 2px solid $primary-color;
     }
 
     &:disabled
     {
-        background-color: lighten($color: #fd2e01, $amount: 20%);
+        background-color: lighten($color: $primary-color, $amount: 20%);
         &:hover, &:focus
         {
-            background-color: lighten($color: #fd2e01, $amount: 20%);
-            color: #fff;
-            border: 2px solid lighten($color: #fd2e01, $amount: 20%);
+            background-color: lighten($color: $primary-color, $amount: 20%);
+            color: $white-color;
+            border: 2px solid lighten($color: $primary-color, $amount: 20%);
             cursor: not-allowed;
         }
     }

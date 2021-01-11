@@ -21,7 +21,7 @@
                 <label for="password" class="label label__password">Mot de passe</label>
                 <input type="password" id="password" class="input input__password" name="password" placeholder="**********" @input="verifMdp()"/>
             </div>
-            <p class="text">Veuillez choisir un mot de passe entre 8 et 12 caractères comprenant au moins une 
+            <p class="text">Veuillez choisir un mot de passe de plus de 8 caractères comprenant au moins une 
             lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial (!-*+@#_/:?$€).</p>
             <p class="error" id="error"></p>
             <div class="row">
@@ -37,87 +37,53 @@ import axios from 'axios';
 export default {
   name: 'HelloWorld',
   data: function() {
-      return {
+      return { 
         regexNom: /^[A-Za-z-]*$/,
+        regexPrenom: /^[A-Za-z-]*$/,
+        regexEmail: /^[a-z-]+[.]*[a-z-]+@groupomania.fr$/,
+        regexMdp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         messageNom: 'Merci d\'entrer un nom valide !',
-        inputNom: document.getElementById('name'),
-        error: document.getElementById('error'),
+        messagePrenom: 'Merci d\'entrer un prénom valide !',
+        messageEmail: 'Merci d\'entrer un email valide (voir notice ci-dessus)',
+        messageMdp: 'Merci d\'entrer un mot de passe valide (voir notice ci-dessus)'
       }
-  },
+ },
   methods: {
+      formVerif(regex, message, input, error) {
+        if(regex.test(input.value)) {
+              error.textContent = '';
+              input.classList.add('green-border');
+          } else {
+              input.classList.remove('green-border');
+              error.textContent = message;
+          }      
+    },
       verifNom() {
-          const regex = /^[A-Za-z-]*$/;
-          const message = 'Merci d\'entrer un nom valide !';
           const input = document.getElementById('name');
           const error = document.getElementById('error');
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
+          this.formVerif(this.regexNom, this.messageNom, input, error);
       },
       verifPrenom() {
-          const regex = /^[A-Za-z-]*$/;
-          const message = 'Merci d\'entrer un prénom valide !';
           const input = document.getElementById('prenom');
           const error = document.getElementById('error');
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
+          this.formVerif(this.regexPrenom, this.messagePrenom, input, error);
       },
       verifEmail() {
-          const regex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
-          const message = 'Merci d\'entrer un email valide (voir notice ci-dessus)';
           const input = document.getElementById('email');
           const error = document.getElementById('error');
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
+          this.formVerif(this.regexEmail, this.messageEmail, input, error);
       },
       verifMdp() {
-          const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-          const message = 'Merci d\'entrer un mot de passe valide (voir notice ci-dessus)';
           const input = document.getElementById('password');
           const error = document.getElementById('error');
-          if(regex.test(input.value))
-          {
-              error.textContent = '';
-              input.classList.add('green-border');
-          }
-          else
-          {
-              input.classList.remove('green-border');
-              error.textContent = message;
-          }
+          this.formVerif(this.regexMdp, this.messageMdp, input, error);
       },
       unlockButton() {
           const greenBorder = document.getElementsByClassName('green-border');
           const button = document.getElementById('submit');
-          if(greenBorder.length === 4)
-          {
+          if(greenBorder.length === 4) {
               button.removeAttribute('disabled');
-          }
-          else
-          {      
+          } else {      
               button.setAttribute('disabled', 'true');
           }
       },
@@ -141,6 +107,10 @@ $breakpoints:
 	mobile: 500px,
 	tablette: 900px
 );
+
+$primary-color: #E9190E;
+$white-color: #fff;
+$secondary-color: #2c3e50;
 
 @mixin mobile-only
 {
@@ -172,7 +142,7 @@ h2
   margin-bottom: 30px;
   padding-bottom: 20px;
   font-size: 2.5em;
-  border-bottom: #2C3E4F 2px solid;
+  border-bottom: $secondary-color 2px solid;
 }
 
 .text
@@ -206,7 +176,6 @@ h2
   @include mobile-only
   {
       width: auto;
-      box-shadow: none;
   }
 
   @include tablette-only
@@ -263,7 +232,7 @@ h2
 
   &:hover, &:focus
   {
-    border: #fd2e01 2px solid;
+    border: $primary-color 2px solid;
   }
 }
 
@@ -290,7 +259,7 @@ h2
 .error
 {
   margin-top: 0;
-  color: #fd2e01;
+  color: $primary-color;
   font-weight: 600;
 }
 
@@ -302,31 +271,31 @@ h2
     border-radius: 10px;
     margin-top: 20px;
     margin-bottom: 50px;
-    background-color: #fd2e01;
+    background-color: $primary-color;
     font-size: 1.2em;
-    color: #fff;
+    color: $white-color;
     cursor: pointer;
 
     @include mobile-only
     {
-        width: 35%;
+        width: 50%;
     }
 
     &:hover
     {
-      background-color: #fff;
-      color: #fd2e01;
-      border: 2px solid #fd2e01;
+      background-color: $white-color;
+      color: $primary-color;
+      border: 2px solid $primary-color;
     }
 
     &:disabled
     {
-        background-color: lighten($color: #fd2e01, $amount: 20%);
+        background-color: lighten($color: $primary-color, $amount: 20%);
         &:hover, &:focus
         {
-            background-color: lighten($color: #fd2e01, $amount: 20%);
-            color: #fff;
-            border: 2px solid lighten($color: #fd2e01, $amount: 20%);
+            background-color: lighten($color: $primary-color, $amount: 20%);
+            color: $white-color;
+            border: 2px solid lighten($color: $primary-color, $amount: 20%);
             cursor: not-allowed;
         }
     }

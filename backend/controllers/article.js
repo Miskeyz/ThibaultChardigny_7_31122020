@@ -1,14 +1,12 @@
-const Article = require('../models/Article');
-const fs = require('fs');
 const mysql = require('mysql');
 
 const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&’“'_/§?\s()]+$/;
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  port: '8889',
-  database: 'Groupomania'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  port: process.env.DB_PORT,
+  database: process.env.DB_DATABASE
 });
 
 exports.createArticle = (req, res, next) =>
@@ -27,9 +25,9 @@ exports.createArticle = (req, res, next) =>
 
 exports.modifyArticle = (req, res, next) =>
 {
-  if(regex.test(req.body.content) && req.body.userId) 
+  if(regex.test(req.body.content) && req.body.authorId) 
   {
-    const data = `UPDATE articles SET userId="${req.body.userId}",  content="${req.body.content}" WHERE id="${req.body.id}"`;
+    const data = `UPDATE articles SET userId="${req.body.authorId}",  content="${req.body.content}" WHERE id="${req.body.id}"`;
     connection.query(data, function(err, res) {
     console.log('Article modifié !');
   })}

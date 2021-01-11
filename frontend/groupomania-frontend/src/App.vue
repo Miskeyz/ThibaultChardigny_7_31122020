@@ -20,12 +20,10 @@ export default {
     ...mapActions(['disconnect']),
     isConnected() {
       const token = sessionStorage.getItem('token');
-      if(token)
-      {
+      if(token) {
         return false
       }
-      else
-      {
+      else {
         return true
       }
     },
@@ -34,12 +32,17 @@ export default {
 </script>
 
 <style lang="scss">
+
+$primary-color: #E9190E;
+$white-color: #fff;
+$secondary-color: #2c3e50;
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: $secondary-color;
   margin: -8px;
 }
 
@@ -57,7 +60,7 @@ export default {
   a {
     font-weight: bold;
     font-size: 1.2em;
-    color: #fff;
+    color: $white-color;
     text-decoration: none;
     padding-left: 15px;
     padding-right: 15px;
@@ -74,37 +77,14 @@ export default {
   &__inscription
   {
     margin-top: 16px;
-    border-bottom: 2px solid #fd2e01;
+    border-bottom: 2px solid $primary-color;
     padding-bottom: 16px;
 
     &:hover
     {
-      border-bottom: 2px solid #fff;
+      border-bottom: 2px solid $white-color;
     }
   }
 }
-
-$breakpoints: 
-(
-	mobile: 500px,
-	tablette: 900px
-);
-
-@mixin mobile-only
-{
-	@media screen and (max-width: map-get($breakpoints, mobile))
-	{
-		@content;
-	}
-}
-
-@mixin tablette-only
-{
-	@media screen and (max-width: map-get($breakpoints, tablette))
-	{
-		@content;
-	}
-}
-
 
 </style>

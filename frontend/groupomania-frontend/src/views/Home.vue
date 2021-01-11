@@ -18,12 +18,9 @@ export default {
   methods: {
     isConnected() {
       const token = sessionStorage.getItem('token');
-      if(token)
-      {
+      if(token) {
         return false
-      }
-      else
-      {
+      } else {
         return true
       }
     },

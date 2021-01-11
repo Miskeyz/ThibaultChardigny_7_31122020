@@ -2,7 +2,6 @@
     <div class="content">
         <div class="header">
             <h1>Bonjour {{ this.userPrenom }} !</h1>
-            <button class="delete-button" @click.prevent="fetchDeleteUser()">Supprimer mon compte</button>
         </div>
         <div class='body body-block'>
             <div class="articles">
@@ -37,30 +36,35 @@
                     </div>
                 </div>
                 <div class="opacity-block" v-show="isClicked">
-                </div>
+            </div>
         </div>
+        <button class="delete-button" @click.prevent="fetchDeleteUser()">Supprimer mon compte</button>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
 import jsonwebtoken from 'jsonwebtoken';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'Articles',
   data: function() {
-      return{
-          articleList: [],
-          article: [
-              {
-                  content: '',
-              }
-          ],
-          userNom: '',
-          userPrenom: '',
-          isClicked: false,
-          token: sessionStorage.getItem('token'),
-          userId: '',
+      return {
+        articleList: [],
+        article: [
+            {
+                content: '',
+                userId: 0,
+            }
+        ],
+        userNom: '',
+        userPrenom: '',
+        userIsAdmin: 0,
+        isClicked: false,
+        token: sessionStorage.getItem('token'),
+        userId: '',
+        textInput: document.getElementById('textarea'),
       }
   },
   created () {
@@ -68,27 +72,22 @@ export default {
     this.fetchGetUserInfos();
   },
   methods: {
+      ...mapActions(['formVerif']),
       verifTextarea() {
           const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'’_/§?\s()]+$/;
           const input = document.getElementById('textarea');
-          if(regex.test(input.value))
-          {
+          if(regex.test(input.value)) {
               input.classList.add('green-border-articles');
-          }
-          else
-          {
+          } else {
               input.classList.remove('green-border-articles');
           }
       },
       unlockButton() {
           const greenBorder = document.getElementsByClassName('green-border-articles');
           const button = document.getElementById('publier');
-          if(greenBorder.length === 1)
-          {
+          if(greenBorder.length === 1) {
               button.removeAttribute('disabled');
-          }
-          else
-          {      
+          } else {      
               button.setAttribute('disabled', 'true');
           }
       },
@@ -100,8 +99,10 @@ export default {
       },
       fetchModifyArticle(id) {
           const content = document.getElementById('modify-textarea').value;
+          const userId = this.article[0].userId;
+          console.log(userId);
           axios.put('http://localhost:3000/api/article/' + id, 
-          { content: content, userId: this.userId, id: id }, {headers: { 'Authorization': this.token }});
+          { content: content, authorId: this.article[0].userId, userId: this.userId, id: id }, {headers: { 'Authorization': this.token }});
           window.location.reload();
       },
       fetchDeleteArticle(id) {
@@ -125,6 +126,7 @@ export default {
               const results = JSON.parse(response.data);
               this.userNom = results[0].nom;
               this.userPrenom = results[0].prenom;
+              this.userIsAdmin = results[0].admin;
           });
       },
       fetchDeleteUser() {
@@ -152,12 +154,9 @@ export default {
         const token = sessionStorage.getItem('token');
         const decodedToken = jsonwebtoken.verify(token, "RANDOM_TOKEN_SECRET");
         this.userId = decodedToken.userId;
-          if(this.userId == id)
-          {
+          if((this.userId == id) || this.userIsAdmin === 1) {
               return true;
-          }
-          else
-          {
+          } else {
               return false;
           }
       },
@@ -173,24 +172,24 @@ $breakpoints:
 	tablette: 900px
 );
 
-@mixin mobile-only
-{
-	@media screen and (max-width: map-get($breakpoints, mobile))
-	{
+$primary-color: #E9190E;
+$white-color: #fff;
+$secondary-color: #2c3e50;
+
+@mixin mobile-only {
+	@media screen and (max-width: map-get($breakpoints, mobile)) {
 		@content;
 	}
 }
-@mixin tablette-only
-{
-	@media screen and (max-width: map-get($breakpoints, tablette))
-	{
+@mixin tablette-only {
+	@media screen and (max-width: map-get($breakpoints, tablette)) {
 		@content;
 	}
 }
 
 h1
 {
-    color: #fff;
+    color: $white-color;
     padding-top: 210px;
     font-size: 2.5em;
     margin-bottom: 0;
@@ -204,16 +203,17 @@ h1
 
 .delete-button
 {
-    margin-top: 0;
-    color: #fd2e01;
-    background-color: #fff;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    color: $primary-color;
+    background-color: $white-color;
     border-radius: 10px;
     cursor: pointer;
     padding: 3px 5px;
     &:hover, &:focus
     {
-        background-color: #fd2e01;
-        color: #fff;
+        background-color: $primary-color;
+        color: $white-color;
     }
 }
 
@@ -223,15 +223,15 @@ textarea
     margin-top: 20px;
     height: 100px;
     border-radius: 20px;
-    border: 2px solid #2c3e50;
+    border: 2px solid $secondary-color;
     padding: 15px;
-    color: #2c3e50;
+    color: $secondary-color;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     font-size: 1em;
 
     &:hover, &:focus
     {
-        border: #fd2e01 2px solid;
+        border: $primary-color 2px solid;
     }
 }
 
@@ -249,7 +249,7 @@ textarea
     margin-top: 20px;
     margin-bottom: 20px;
     border-radius: 20px;
-    background-color: #fff;
+    background-color: $white-color;
     text-align: left;
     padding: 5px 20px;
 
@@ -272,14 +272,14 @@ textarea
     {
         border-radius: 30px;
         padding: 5px 15px;
-        border-color: #fd2e01;
-        color: #fd2e01;
-        background-color: #fff;
+        border-color: $primary-color;
+        color: $primary-color;
+        background-color: $white-color;
         font-weight: 600;
         &--liked
         {
-            background-color: #fd2e01;
-            color: #fff;
+            background-color: $primary-color;
+            color: $white-color;
         }
     }
 
@@ -299,9 +299,9 @@ textarea
         margin-right: 10px;
         border-radius: 30px;
         padding: 5px 15px;
-        border-color: #fd2e01;
-        color: #fd2e01;
-        background-color: #fff;
+        border-color: $primary-color;
+        color: $primary-color;
+        background-color: $white-color;
         font-weight: 600;
         text-align: center;
         cursor: pointer;
@@ -312,8 +312,8 @@ textarea
         }
         &:hover, &:focus
         {
-            background-color: #fd2e01;
-            color: #fff;
+            background-color: $primary-color;
+            color: $white-color;
         }
     }
 }
@@ -374,26 +374,26 @@ textarea
     border-radius: 10px;
     margin-top: 20px;
     margin-bottom: 50px;
-    background-color: #fd2e01;
+    background-color: $primary-color;
     font-size: 1.2em;
-    color: #fff;
+    color: $white-color;
     cursor: pointer;
 
     &:hover
     {
-      background-color: #fff;
-      color: #fd2e01;
-      border: 2px solid #fd2e01;
+      background-color: $white-color;
+      color: $primary-color;
+      border: 2px solid $primary-color;
     }
 
     &:disabled
     {
-        background-color: lighten($color: #fd2e01, $amount: 20%);
+        background-color: lighten($color: $primary-color, $amount: 20%);
         &:hover, &:focus
         {
-            background-color: lighten($color: #fd2e01, $amount: 20%);
-            color: #fff;
-            border: 2px solid lighten($color: #fd2e01, $amount: 20%);
+            background-color: lighten($color: $primary-color, $amount: 20%);
+            color: $white-color;
+            border: 2px solid lighten($color: $primary-color, $amount: 20%);
             cursor: not-allowed;
         }
     }
@@ -411,7 +411,7 @@ textarea
     margin-left: -200px;
     margin-top: -350px;
     position: absolute;
-    background: #fff;
+    background: $white-color;
     opacity: 70%;
 
     @include mobile-only
@@ -465,7 +465,7 @@ textarea
         height: 50%;
         margin: auto;
         margin-top: 50vh;
-        background-color: #fff;
+        background-color: $white-color;
         transform: translateY(-50%);
 
         @include mobile-only
@@ -482,9 +482,9 @@ textarea
         padding: 2px 7px;
         font-size: 1.4em;
         font-weight: 600;
-        color: #fff;
-        border-color: #fd2e01;
-        background-color: #fd2e01;
+        color: $white-color;
+        border-color: $primary-color;
+        background-color: $primary-color;
         position: absolute;
         top: -10px;
         right: -10px;
@@ -497,8 +497,8 @@ textarea
         }
         &:hover, &:focus
         {
-            background-color: #fff;
-            color: #fd2e01;
+            background-color: $white-color;
+            color: $primary-color;
         }
     }
 }
