@@ -13,8 +13,12 @@ exports.createArticle = (req, res, next) =>
 {
   if(regex.test(req.body.content) && req.body.userId) 
   {
-    const data = `INSERT INTO articles (userId, content) VALUES ("${req.body.userId}", "${req.body.content}")`;
-    connection.query(data, function(err, res) {
+    const postData = {
+      userId: req.body.userId,
+      content: req.body.content
+    };
+    const data = `INSERT INTO articles SET ?`;
+    connection.query(data, postData, function(err, res) {
     console.log('Article enregistré !');
   })}
   else
@@ -27,8 +31,13 @@ exports.modifyArticle = (req, res, next) =>
 {
   if(regex.test(req.body.content) && req.body.authorId) 
   {
-    const data = `UPDATE articles SET userId="${req.body.authorId}",  content="${req.body.content}" WHERE id="${req.body.id}"`;
-    connection.query(data, function(err, res) {
+    const postData = {
+      userId: req.body.authorId,
+      content: req.body.content,
+      id: req.body.id
+    };
+    const data = `UPDATE articles SET ? WHERE id="${req.body.id}"`;
+    connection.query(data, postData, function(err, res) {
     console.log('Article modifié !');
   })}
   else
