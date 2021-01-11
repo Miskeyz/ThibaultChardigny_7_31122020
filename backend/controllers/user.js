@@ -1,18 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 const mysql = require('mysql');
 
 const nomPrenomRegex = /^[A-Za-z-]*$/;
 const mdpRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const emailRegex = /^[a-z-]+[.]{1}[a-z-]+@groupomania.fr$/;
+const emailRegex = /^[a-z-]+[.]*[a-z-]+@groupomania.fr$/;
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    port: '8889',
-    database: 'Groupomania'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT,
+    database: process.env.DB_DATABASE
   });
 
 exports.signup = (req, res, next) =>
@@ -91,7 +90,7 @@ exports.login = (req, res, next) =>
 exports.getUserInfos = (req, res, next) =>
 {
     const userId = parseInt(req.params.id);
-    const data = `SELECT nom, prenom FROM users WHERE id="${userId}"`;
+    const data = `SELECT nom, prenom, admin FROM users WHERE id="${userId}"`;
     connection.query(data, function(error, results)
     {
       console.log('User infos chargées !');
