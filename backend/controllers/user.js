@@ -32,8 +32,14 @@ exports.signup = (req, res, next) =>
             .then(hash =>  
                 {
                     if(emailAlreadyUsed == 0) {
-                        const data = `INSERT INTO users (nom, prenom, email, password) VALUES ("${req.body.nom}","${req.body.prenom}","${emailMasked}","${hash}")`;
-                        connection.query(data, function(err, res) {
+                        const postData = {
+                            nom: req.body.nom,
+                            prenom: req.body.prenom,
+                            email: emailMasked,
+                            password: hash
+                        };
+                        const data = `INSERT INTO users SET ?`;
+                        connection.query(data, postData, function(err, res) {
                         console.log('Utilisateur enregistré !');
                     })}
                     else {
@@ -55,7 +61,8 @@ exports.login = (req, res, next) =>
         const email = req.body.email;
         const emailBuffer = Buffer.from(email);
         const emailMasked = emailBuffer.toString('base64');
-        const data = `SELECT id, email, password FROM users WHERE email = "${emailMasked}"`;
+        const data = `SELECT id, email, password FROM users WHERE email =` + connection.escape(emailMasked);
+        console.log(data);
         connection.query(data, function(error, results)
         {
             const cryptPassword = results[0].password;
