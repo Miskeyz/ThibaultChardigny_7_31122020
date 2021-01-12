@@ -1,6 +1,6 @@
 # ThibaultChardigny_7_31122020
 
-######## INSTALLATION ######## 
+# INSTALLATION :
 
 Lancement du serveur backend : Ouvrir une interface de commande à partir du dossier backend, effectuer “npm install“, puis “nodemon server“ !
 
@@ -14,7 +14,7 @@ Rendez-vous à l'URL http://localhost:8080/ pour utiliser l'application !
 Sentez vous libre de vous créer un compte !
 Compte modérateur : admin@groupomania.fr / Admin11!
 
-####### CONFIG DE L'API ########
+# CONFIG DE L'API :
 
 URL de base : http://localhost:3000/
 
@@ -33,7 +33,7 @@ URL de base : http://localhost:3000/
 - GET    /api/article/:id : Renvoi les informations d'un seul article à partir de son id
 - GET    /api/article     : Renvoi un tableau contenant tout les articles présent dans la BDD
 
-####### CONFIG MYSQL #######
+# CONFIG MYSQL :
 
 Nom de la base de donnée : Groupomania
 
