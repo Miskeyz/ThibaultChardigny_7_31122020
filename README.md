@@ -18,10 +18,14 @@ Compte modérateur : admin@groupomania.fr / Admin11!
 
 URL de base : http://localhost:3000/
 
+# Users :
+
 - POST   /api/auth/signup : Chiffre le mot de passe, masque l'email et ajoute l'utilisateur à la BDD
 - POST   /api/auth/login  : Vérifie les informations d'identification de l'utilisateur, renvoi un token de connexion
 - GET    /api/auth/:id    : Renvoi les informations de l'utilisateur connecté à partir de son userId
 - DELETE /api/auth/:id    : Supprime le compte utilisateur à partir de son userId
+
+# Articles :
 
 - POST   /api/article     : Ajoute un article à la BDD
 - PUT    /api/article/:id : Modifie un article à partir de l'id de l'article concerné
