@@ -74,7 +74,7 @@ export default {
   methods: {
       ...mapActions(['formVerif']),
       verifTextarea() {
-          const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&“'’_/§?\s()]+$/;
+          const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéëêîïà&“'’_/§?\s()]+$/;
           const input = document.getElementById('textarea');
           if(regex.test(input.value)) {
               input.classList.add('green-border-articles');
