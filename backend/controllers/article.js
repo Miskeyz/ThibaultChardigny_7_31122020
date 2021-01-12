@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéà&’“'_/§?\s()]+$/;
+const regex = /^[A-Za-z0-9-,.;:!@#€$ùèçéëêîïà&’“'_/§?\s()]+$/;
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
