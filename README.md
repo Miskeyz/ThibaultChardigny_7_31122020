@@ -18,16 +18,16 @@ Compte modérateur : admin@groupomania.fr / Admin11!
 
 URL de base : http://localhost:3000/
 
--> POST   /api/auth/signup : Chiffre le mot de passe, masque l'email et ajoute l'utilisateur à la BDD
--> POST   /api/auth/login  : Vérifie les informations d'identification de l'utilisateur, renvoi un token de connexion
--> GET    /api/auth/:id    : Renvoi les informations de l'utilisateur connecté à partir de son userId
--> DELETE /api/auth/:id    : Supprime le compte utilisateur à partir de son userId
+- POST   /api/auth/signup : Chiffre le mot de passe, masque l'email et ajoute l'utilisateur à la BDD
+- POST   /api/auth/login  : Vérifie les informations d'identification de l'utilisateur, renvoi un token de connexion
+- GET    /api/auth/:id    : Renvoi les informations de l'utilisateur connecté à partir de son userId
+- DELETE /api/auth/:id    : Supprime le compte utilisateur à partir de son userId
 
--> POST   /api/article     : Ajoute un article à la BDD
--> PUT    /api/article/:id : Modifie un article à partir de l'id de l'article concerné
--> DELETE /api/article/:id : Supprime un article à partir de l'id de l'article concerné
--> GET    /api/article/:id : Renvoi les informations d'un seul article à partir de son id
--> GET    /api/article     : Renvoi un tableau contenant tout les articles présent dans la BDD
+- POST   /api/article     : Ajoute un article à la BDD
+- PUT    /api/article/:id : Modifie un article à partir de l'id de l'article concerné
+- DELETE /api/article/:id : Supprime un article à partir de l'id de l'article concerné
+- GET    /api/article/:id : Renvoi les informations d'un seul article à partir de son id
+- GET    /api/article     : Renvoi un tableau contenant tout les articles présent dans la BDD
 
 ####### CONFIG MYSQL #######
 
