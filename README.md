@@ -2,7 +2,7 @@
 
 # INSTALLATION :
 
-- Pré-requis : NodeJs v.14.15.1 / VueJs/Cli 4.5.9
+- Pré-requis : NodeJs v.14.15.1
 
 - Lancement du serveur backend : Ouvrir une interface de commande à partir du dossier backend, effectuer “npm install“, puis “nodemon server“ !
 
