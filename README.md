@@ -8,6 +8,7 @@ Lancement de l'application frontend : Ouvrir une interface de commande à partir
 effectuer un “npm install“ puis un “npm run serve“. 
 
 Importez l'export SQL présent à la racine du projet dans votre BDD MySql.
+Si la connexion ne se fait pas avec MySql, veuillez modifier le fichier .env présent à la racine du dossier backend avec vos informations de connexions.
 
 Rendez-vous à l'URL http://localhost:8080/ pour utiliser l'application !
 
