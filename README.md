@@ -2,9 +2,11 @@
 
 # INSTALLATION :
 
-Lancement du serveur backend : Ouvrir une interface de commande à partir du dossier backend, effectuer “npm install“, puis “nodemon server“ !
+- Pré-requis : NodeJs v.14.15.1 / VueJs/Cli 4.5.9 / PHPMyadmin v.4.9.3
 
-Lancement de l'application frontend : Ouvrir une interface de commande à partir du dossier “groupomania-frontend“ présent dans le dossier frontend,
+- Lancement du serveur backend : Ouvrir une interface de commande à partir du dossier backend, effectuer “npm install“, puis “nodemon server“ !
+
+- Lancement de l'application frontend : Ouvrir une interface de commande à partir du dossier “groupomania-frontend“ présent dans le dossier frontend,
 effectuer un “npm install“ puis un “npm run serve“. 
 
 - Importez l'export SQL présent à la racine du projet dans votre BDD MySql. Format : utf8_general_ci, Type : InnoDB
