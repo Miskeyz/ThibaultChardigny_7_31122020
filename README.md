@@ -10,7 +10,7 @@
 effectuer un “npm install“ puis un “npm run serve“. 
 
 - Importez l'export SQL présent à la racine du projet dans votre BDD MySql. Format : utf8_general_ci, Type : InnoDB
-- Si la connexion ne se fait pas avec MySql, veuillez modifier le fichier .env présent à la racine du dossier backend avec vos informations de connexions.
+- Si la connexion ne se fait pas avec MySql, veuillez modifier le fichier .env présent à la racine du dossier backend avec les informations de connexion à votre MySql
 
 Rendez-vous à l'URL http://localhost:8080/ pour utiliser l'application !
 
