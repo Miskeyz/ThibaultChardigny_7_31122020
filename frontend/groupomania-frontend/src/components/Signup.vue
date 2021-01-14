@@ -38,8 +38,8 @@ export default {
   name: 'HelloWorld',
   data: function() {
       return { 
-        regexNom: /^[A-Za-z-]*$/,
-        regexPrenom: /^[A-Za-z-]*$/,
+        regexNom: /^[A-Za-z-\s]*$/,
+        regexPrenom: /^[A-Za-z-\s]*$/,
         regexEmail: /^[a-z-]+[.]*[a-z-]+@groupomania.fr$/,
         regexMdp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         messageNom: 'Merci d\'entrer un nom valide !',
@@ -92,9 +92,16 @@ export default {
           const prenom = document.getElementById('prenom').value;
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
-          axios.post('http://localhost:3000/api/auth/signup', 
-          { nom: nom, prenom: prenom, email: email, password: password });
-          window.location = 'http://localhost:8080';
+          const errorContent = document.getElementById('error');
+          axios.post('http://localhost:3000/api/auth/signup',
+          { nom: nom, prenom: prenom, email: email, password: password })
+          .then((response) => {
+            console.log(response.status);
+            window.location = 'http://localhost:8080';
+          })
+          .catch((error) => {
+            errorContent.textContent = error.response.data;
+          });
       }
   }
 }

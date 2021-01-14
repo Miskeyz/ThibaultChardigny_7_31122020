@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 
-const nomPrenomRegex = /^[A-Za-z-]*$/;
+const nomPrenomRegex = /^[A-Za-z-\s]*$/;
 const mdpRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const emailRegex = /^[a-z-]+[.]*[a-z-]+@groupomania.fr$/;
 
@@ -41,16 +41,18 @@ exports.signup = (req, res, next) =>
                         const data = `INSERT INTO users SET ?`;
                         connection.query(data, postData, function(err, res) {
                         console.log('Utilisateur enregistré !');
-                    })}
+                        });
+                        res.status(201).send('Utilisateur enregistré !');
+                    }
                     else {
-                        return 'Email déjà utilisé !';
+                        return res.status(401).send('Cet email possède déjà un compte !');
                     }                     
                 })
-             .catch(error => res.status(500).json({ error }));
+             .catch(error => res.status(500).send('Oups, quelque chose n\'a pas marché !'));
     }
     else
     {
-        throw 'Format de données non valide !';
+        return res.status(500).send('Format de données non valide !');
     }
 };
 
@@ -62,35 +64,41 @@ exports.login = (req, res, next) =>
         const emailBuffer = Buffer.from(email);
         const emailMasked = emailBuffer.toString('base64');
         const data = `SELECT id, email, password FROM users WHERE email =` + connection.escape(emailMasked);
-        console.log(data);
         connection.query(data, function(error, results)
         {
-            const cryptPassword = results[0].password;
-            const userId = results[0].id;
-            bcrypt.compare(req.body.password, cryptPassword)
-                .then(valid => 
-                {
-                    if (!valid)
+            if(results.length === 1)
+            {
+                const cryptPassword = results[0].password;
+                const userId = results[0].id;
+                bcrypt.compare(req.body.password, cryptPassword)
+                    .then(valid => 
                     {
-                        return res.status(401).json({ error: 'Mot de passe incorrect !'});
-                    }
-                    res.status(200).json
-                    ({
-                        userId: userId,
-                        token: jwt.sign
-                    (
-                        { userId: userId },
-                        "RANDOM_TOKEN_SECRET",
-                        { expiresIn: '24h' }
-                    )
-                });
-            })
-            .catch(error => res.status(500).json({ error }));
+                        if (!valid)
+                        {
+                            return res.status(401).send('Mot de passe incorrect !');
+                        }
+                        res.status(200).json
+                        ({
+                            userId: userId,
+                            token: jwt.sign
+                        (
+                            { userId: userId },
+                            "RANDOM_TOKEN_SECRET",
+                            { expiresIn: '24h' }
+                        )
+                    });
+                })
+                .catch(error => res.status(500).json({ error }));
+            }
+            else
+            {
+                return res.status(401).send('Aucune correspondance avec cet email !');
+            }
         })
     }
     else
     {
-        throw 'Données saisies non valides !'
+        return res.status(500).send('Données saisies non valides !');
     }
 };
 
