@@ -16,7 +16,7 @@
                 <label for="email" class="label label__email">Email</label>
                 <input type="text" id="email" class="input input__mail" name="email" placeholder="ex: jean.dupond@groupomania.fr" @input="verifEmail()"/>
             </div>
-            <p class="text">Veuillez renseigner votre adresse email interne à Groupomania uniquement.</p>
+            <p class="text">Veuillez renseigner votre adresse email interne à Groupomania uniquement (ex: jean@groupomania.fr)</p>
             <div class="row">
                 <label for="password" class="label label__password">Mot de passe</label>
                 <input type="password" id="password" class="input input__password" name="password" placeholder="**********" @input="verifMdp()"/>
