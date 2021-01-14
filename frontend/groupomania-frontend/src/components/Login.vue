@@ -59,12 +59,16 @@ export default {
       fetchLogin() {
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
+          const errorMessage = document.getElementById('error');
           axios.post('http://localhost:3000/api/auth/login', 
           { email: email, password: password })
           .then ((response) => {
               sessionStorage.setItem('token', response.data.token);
               window.location.reload();
-          });
+          })
+          .catch((error) => {
+            errorMessage.textContent = error.response.data;
+          })
       },
   }
 }

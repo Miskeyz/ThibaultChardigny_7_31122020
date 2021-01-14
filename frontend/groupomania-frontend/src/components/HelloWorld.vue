@@ -20,6 +20,10 @@ export default {
 
 <style scoped lang="scss">
 
+$primary-color: #E9190E;
+$white-color: #fff;
+$secondary-color: #2c3e50;
+
 $breakpoints: 
 (
 	mobile: 500px,
@@ -52,8 +56,8 @@ h1
     height: 40px;
     border-radius: 10px;
     margin-top: 20px;
-    background-color: #fd2e01;
-    color: #fff;
+    background-color: $primary-color;
+    color: $white-color;
     cursor: pointer;
     text-decoration: none;
     padding: 5px 25px;
@@ -63,9 +67,9 @@ h1
 
     &:hover
     {
-      background-color: #fff;
-      color: #fd2e01;
-      border: 2px solid #fd2e01;
+      background-color: $white-color;
+      color: $primary-color;
+      border: 2px solid $primary-color;
     }
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
     <div class="content">
-        <div class="header">
+        <header class="header">
             <h1>Bonjour {{ this.userPrenom }} !</h1>
-        </div>
+        </header>
         <div class='body body-block'>
             <div class="articles">
                 <form @input="unlockButton" @submit.prevent="fetchCreateArticle" class="form-article">
                     <textarea placeholder="Que voulez vous partager à vos collègues ?" id="textarea" @input="verifTextarea" required></textarea><br>
                     <input type="submit" id="publier" class="button" value="Publier" disabled />
                 </form>
-                <div v-for="item in articleList" v-bind:key="item.id">
+                <article v-for="item in articleList" v-bind:key="item.id">
                     <div class="last-articles">
                         <div class="last-articles__row">
                             <div>
@@ -24,7 +24,7 @@
                             {{ item.content }}
                         </p>
                     </div>
-                </div>
+                </article>
             </div>
                 <div class="popup-modify" v-show="isClicked">
                     <div class="popup-modify__form">

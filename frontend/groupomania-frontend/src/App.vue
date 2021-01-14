@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <div class="nav-container">
+    <nav class="nav-container">
       <div id="nav">
-        <router-link to="/"><img src="./images/logo_blanc.png" alt="" /></router-link>
+        <router-link to="/"><img src="./images/logo_blanc.png" alt="Logo de Groupomania" /></router-link>
         <router-link to="/inscription" class="lien__inscription" v-if="isConnected()">Inscription</router-link>
         <a href="#" class="lien_inscription" @click="disconnect()" v-else>Déconnexion</a>
       </div>
-    </div>
+    </nav>
     <router-view/>
   </div>
 </template>
@@ -16,6 +16,10 @@ import { mapActions } from 'vuex'
 
 export default {
   name: 'App',
+  created() {
+    document.title = 'Groupomania - Social';
+    document.querySelector('html').setAttribute('lang', 'fr');
+  },
   methods: {
     ...mapActions(['disconnect']),
     isConnected() {
